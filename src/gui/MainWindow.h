@@ -47,7 +47,6 @@ private slots:
 private:
     QScopedPointer<Generator> m_generator;
     QScopedPointer<QTimer> timer;
-
 };
 
 #endif /* GUI_MAINWINDOW_H_ */

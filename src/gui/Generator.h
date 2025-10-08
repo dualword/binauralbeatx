@@ -86,6 +86,7 @@ private:
         qint64 len = (m_format.sampleRate() * m_format.channelCount() * (m_format.sampleSize() / 8) * duration) / 1000000;
         m_buf.resize(len);
         unsigned char *ptr = reinterpret_cast<unsigned char *>(m_buf.data());
+        std::uniform_real_distribution<> dist(-0.25, 0.25);
 
         int sampleIndex = 0;
         int j = 0;
@@ -93,10 +94,10 @@ private:
             qreal x1, x2;
             if (j % 2 == 0) {
                 x1 = qSin(2 * M_PI * m_freq1 * qreal(sampleIndex % m_format.sampleRate()) / m_format.sampleRate());
-               if(m_noise) x1 += rnd->bounded(1.0) * -1.0;
+               if(m_noise) x1 = (x1 * 0.9  + dist(*QRandomGenerator::global()) * 0.1 );
             } else {
                 x2 = qSin(2 * M_PI * m_freq2 * qreal(sampleIndex % m_format.sampleRate()) / m_format.sampleRate());
-                if(m_noise) x2 += rnd->bounded(1.0) * -1.0;
+                if(m_noise) x2 = (x2 * 0.9  + dist(*QRandomGenerator::global()) * 0.1 );
             }
 
             for (int i = 0; i < m_format.channelCount(); ++i) {

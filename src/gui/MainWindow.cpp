@@ -30,6 +30,15 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
     txtR->setAlignment(Qt::AlignHCenter);
     setAttribute(Qt::WA_DeleteOnClose, true);
     restoreGeometry(mApp->value("geom").toByteArray());
+    gView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(gView, QOverload<const QPoint&>::of(&QWidget::customContextMenuRequested), this,
+            [this](const QPoint& p){
+        QMenu menu(this);
+        auto a = new QAction(tr("About"), this);
+        menu.addAction(a);
+        connect(a,SIGNAL(triggered()),this,SLOT(showAbout()));
+        menu.exec(QCursor::pos());
+    });
 }
 
 MainWindow::~MainWindow() {
@@ -67,7 +76,6 @@ void MainWindow::init(){
     connect(chkNoise, &QCheckBox::stateChanged, [this](int val) {
 
     });
-
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -80,7 +88,7 @@ void MainWindow::showAbout() {
 	str.append(qApp->applicationName());
 	str.append(" ").append(qApp->applicationVersion()).append("<br>");
     str.append("License: GPL-3 (GPL-3.0-only)<br/>");
-    str.append("Website: <a href='https://github.com/dualword/binauralbeatx'>https://github.com/dualword/binauralbeatx</a><br/>");
+    str.append("<a href='https://github.com/dualword/binauralbeatx'>https://github.com/dualword/binauralbeatx</a><br/>");
     str.append("&copy; 2025 Alexander Busorgin <br/>");
 	QMessageBox::about(this, tr("About"), str );
 }
