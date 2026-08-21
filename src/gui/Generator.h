@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Alexander Busorgin
+ * Copyright (C) 2025 - 2026 Alexander Busorgin
  * This file is part of BinauralBeatX (https://github.com/dualword/binauralbeatx)
  * License: GPL-3 (GPL-3.0-only)
  *
@@ -21,21 +21,28 @@
 #define GENERATOR_H
 
 #include <QtWidgets>
-#include <QAudioOutput>
+#include <QAudioSink>
+#include <QAudioFormat>
 #include <QRandomGenerator>
+#include <QMediaDevices>
 
 class Generator : public QIODevice {
     Q_OBJECT
 
 public:
     Generator(qreal f1, qreal f2) : m_freq1(f1), m_freq2(f2) {
+
         m_format.setSampleRate(44100);
         m_format.setChannelCount(2);
-        m_format.setSampleSize(16);
-        m_format.setByteOrder(QAudioFormat::LittleEndian);
-        m_format.setSampleType(QAudioFormat::SignedInt);
-        m_out.reset(new QAudioOutput(m_format, this));
-        connect(m_out.get(), SIGNAL(notify()), SLOT(notified()));
+        m_format.setSampleFormat(QAudioFormat::Int16);
+
+        QAudioDevice dev(QMediaDevices::defaultAudioOutput());
+        if (!dev.isFormatSupported(m_format)) {
+            qWarning() << "audio format not supported by backend, cannot play audio.";
+            return;
+        }
+
+        m_out.reset(new QAudioSink(dev, m_format, this));
         connect(m_out.get(), SIGNAL(stateChanged(QAudio::State)), SLOT(stateChanged(QAudio::State)));
     }
     virtual ~Generator() {}
@@ -53,7 +60,7 @@ public:
         m_out->stop();
     }
 
-    QAudioOutput* output() { return m_out.get(); }
+    QAudioSink* output() { return m_out.get(); }
 
 signals:
     void setBuffer(const QByteArray&, qint64);
@@ -81,9 +88,9 @@ private slots:
 
 private:
     void generateData() {
-        const int channelBytes = m_format.sampleSize() / 8;
+        const int channelBytes = m_format.bytesPerSample();
         const int duration = 1000000;
-        qint64 len = (m_format.sampleRate() * m_format.channelCount() * (m_format.sampleSize() / 8) * duration) / 1000000;
+        qint64 len = (m_format.sampleRate() * m_format.channelCount() * (m_format.bytesPerSample()) * duration) / 1000000;
         m_buf.resize(len);
         unsigned char *ptr = reinterpret_cast<unsigned char *>(m_buf.data());
         std::uniform_real_distribution<> dist(-0.25, 0.25);
@@ -116,7 +123,7 @@ private:
 
     QRandomGenerator *rnd = QRandomGenerator::global();
     QAudioFormat m_format;
-    QScopedPointer<QAudioOutput> m_out;
+    QScopedPointer<QAudioSink> m_out;
     QByteArray m_buf;
     qint64 m_pos = 0;
     qreal m_freq1, m_freq2;

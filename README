@@ -1,12 +1,12 @@
 BinauralBeatX - binaural beats experimentation.
 
 How to build:
-	- prerequisites: Qt 5.15
+        - prerequisites: C++20 (gcc 14.2), Qt 6.8
 	- qmake
 	- make
 
 Third Party Software:
-	- Qt 5.15      license:LGPL
+        - Qt license:LGPL
 
 License: GPL-3 (GPL-3.0-only)
 Source code: https://github.com/dualword/binauralbeatx

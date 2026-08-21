@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Alexander Busorgin
+ * Copyright (C) 2025 - 2026 Alexander Busorgin
  * This file is part of BinauralBeatX (https://github.com/dualword/binauralbeatx)
  * License: GPL-3 (GPL-3.0-only)
  *
