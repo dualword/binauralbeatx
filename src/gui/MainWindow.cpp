@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Alexander Busorgin
+ * Copyright (C) 2025 - 2026 Alexander Busorgin
  * This file is part of BinauralBeatX (https://github.com/dualword/binauralbeatx)
  * License: GPL-3 (GPL-3.0-only)
  *
@@ -18,7 +18,8 @@
 */
 
 #include "app/global.h"
-#include "ScreenSaver.h"
+#include "ScreenStarfield.h"
+#include "ScreenMatrix.h"
 #include "Generator.h"
 
 #include <QRandomGenerator>
@@ -28,6 +29,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
     setWindowTitle(QApplication::applicationName());
     txtL->setAlignment(Qt::AlignHCenter);
     txtR->setAlignment(Qt::AlignHCenter);
+    comboScreen->addItems({ "Matrix", "Starfield"});
     setAttribute(Qt::WA_DeleteOnClose, true);
     restoreGeometry(mApp->value("geom").toByteArray());
     gView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -38,6 +40,15 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
         menu.addAction(a);
         connect(a,SIGNAL(triggered()),this,SLOT(showAbout()));
         menu.exec(QCursor::pos());
+    });
+
+
+    effects.push_back(std::make_shared<ScreenMatrix>());
+    effects.push_back(std::make_shared<ScreenStarfield>());
+    gView->setEffect(effects[0].get());
+
+    connect(comboScreen, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index) {
+        gView->setEffect(effects[index].get());
     });
 }
 
@@ -58,13 +69,15 @@ void MainWindow::init(){
             btnG->setText("Stop");
             gView->start();
             timer.reset(new QTimer());
-            QObject::connect( timer.get(), SIGNAL( timeout() ), gView, SLOT( repaint() ) );
+            QObject::connect( timer.get(), SIGNAL( timeout() ), gView, SLOT( update() ) );
             timer->start(35);
+            comboScreen->setEnabled(false);
         } else {
             gView->stop();
             m_generator->stop();
             btnG->setText("Play");
             timer->stop();
+            comboScreen->setEnabled(true);
         }
     });
 

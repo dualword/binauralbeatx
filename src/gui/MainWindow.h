@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Alexander Busorgin
+ * Copyright (C) 2025 - 2026 Alexander Busorgin
  * This file is part of BinauralBeatX (https://github.com/dualword/binauralbeatx)
  * License: GPL-3 (GPL-3.0-only)
  *
@@ -47,6 +47,7 @@ private slots:
 private:
     QScopedPointer<Generator> m_generator;
     QScopedPointer<QTimer> timer;
+    std::vector<std::shared_ptr<VideoEffect>> effects;
 };
 
 #endif /* GUI_MAINWINDOW_H_ */

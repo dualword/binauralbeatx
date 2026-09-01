@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Alexander Busorgin
+ * Copyright (C) 2025 - 2026 Alexander Busorgin
  * This file is part of BinauralBeatX (https://github.com/dualword/binauralbeatx)
  * License: GPL-3 (GPL-3.0-only)
  *
@@ -22,32 +22,49 @@
 
 #include <QtWidgets>
 
-struct star{
-    qreal x, y, z, speed;
-    int a, size, r, g, b;
+class VideoEffect {
+public:
+    VideoEffect() {};
+    virtual ~VideoEffect() = default;
+    virtual void paint(QPainter& painter, const QRect& r){};
+    virtual void reset (int width, int height){w = width; h = height;};
+    virtual void start() {};
+    virtual void stop() {};
+
+protected:
+    int w=1, h=1;
 };
 
 class ScreenSaver : public QWidget {
     Q_OBJECT
 
 public:
-    ScreenSaver(QWidget *);
-
-public slots:
-    void reset(star&);
-    void start();
-    void stop();
+    ScreenSaver(QWidget *p = nullptr);
+    virtual ~ScreenSaver();
+    void setEffect(VideoEffect* effect) {
+        activeEffect = effect; activeEffect->reset(width(), height());  update();
+    }
+    virtual void start() {activeEffect->start();};
+    virtual void stop() {activeEffect->stop();update();};
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *);
+    void paintEvent(QPaintEvent *event) {
+        QWidget::paintEvent(event);
+        if (activeEffect==nullptr) return;
+        QPainter p(this);
+        p.setFont(font());
+        p.save();
+        activeEffect->paint(p, event->rect());
+        p.restore();
+    };
+    void resizeEvent(QResizeEvent *event) {
+        QWidget::resizeEvent(event);
+        if (activeEffect==nullptr) return;
+        activeEffect->reset(width(), height());
+    };
 
 private:
-    QBrush bg, brush;
-    QPen pen;
-    int w, h;
-    QList<star> list;
-    int max = 500;
+    VideoEffect* activeEffect = nullptr;
 };
 
 #endif // SCREENSAVER_H

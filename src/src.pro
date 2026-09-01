@@ -8,21 +8,26 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 QT += widgets multimedia
-CONFIG += c++11 thread release
+CONFIG += c++20 thread release
 LIBS += 
 
 HEADERS += \
         app/DualwordApp.h \
 	gui/MainWindow.h \
 	app/global.h \
+	gui/Generator.h \
 	gui/ScreenSaver.h \
-	gui/Generator.h
+	gui/ScreenMatrix.h \
+	gui/ScreenStarfield.h
+
 
 SOURCES += \
 	app/main.cpp \
 	app/DualwordApp.cpp \
 	gui/MainWindow.cpp \
-	gui/ScreenSaver.cpp
+	gui/ScreenSaver.cpp \
+	gui/ScreenMatrix.cpp \
+	gui/ScreenStarfield.cpp
 
 FORMS += \
 	gui/MainWindow.ui

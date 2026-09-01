@@ -17,13 +17,36 @@
  * along with BinauralBeatX.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef SCREENSTARFIELD_H
+#define SCREENSTARFIELD_H
+
 #include "ScreenSaver.h"
 
-ScreenSaver::ScreenSaver(QWidget* p) : QWidget(p) {
+struct star{
+    qreal x, y, z, speed;
+    int a, size, r, g, b;
+};
 
-}
+class ScreenStarfield : public VideoEffect {
 
-ScreenSaver::~ScreenSaver() {
+public:
+    ScreenStarfield();
+    void reset (int width, int height){w = width/2; h = height/2;};
 
-}
+public slots:
+    void reset(star&);
+    void start();
+    void stop();
 
+protected:
+    virtual void paint(QPainter& painter, const QRect& r);
+
+private:
+    QBrush bg, brush;
+    QPen pen;
+    QList<star> list;
+    int max = 500;
+
+};
+
+#endif // SCREENSTARFIELD_H
