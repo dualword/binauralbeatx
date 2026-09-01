@@ -5,6 +5,7 @@ Source code: https://github.com/dualword/binauralbeatx
 
 <p align="middle">
     <img src="screenshot.png" width="150"/>
+    <img src="screenshot1.png" width="150"/>
 </p>
 
 # Disclaimer
